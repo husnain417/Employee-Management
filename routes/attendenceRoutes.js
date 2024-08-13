@@ -8,8 +8,7 @@ router.post('/set-checkin', authenticateToken ,attendenceController.setCheckInTi
 router.post('/set-checkout', authenticateToken ,attendenceController.setCheckOutTime);
 router.get('/get-attendence', authenticateToken ,attendenceController.getAttendence);
 router.get('/get-AllAttendence', authenticateToken ,attendenceController.getAllAttendence);
-router.post('/get-AttendenceByDate', authenticateToken ,attendenceController.getAttendenceByDate);
-router.post('/get-AttendenceByName', authenticateToken ,attendenceController.getAttendenceByName);
+router.post('/get-AttendenceByDateOrName', authenticateToken ,attendenceController.getAttendenceByDateOrName);
 router.post('/get-AttendenceByDateForEmp', authenticateToken ,attendenceController.getAttendenceByDateForEmp);
 
 

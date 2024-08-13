@@ -5,44 +5,6 @@ const bcrypt = require('bcrypt');
 const { sendOtp } = require('../services/sendOtp');
 const { reSendOtp } = require('../services/sendOtp');
 
-const registerUser = async (req, res) => {
-  try {
-    const { username, email, password, role } = req.body;
-
-    if (!username || !email || !password || !role) {
-      return res.status(400).json({ message: 'Fill all fields' });
-    }
-    
-    const isPasswordValid = /^(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
-    if (!isPasswordValid) {
-      return res.status(400).json({
-        message: 'Password must be at least 8 characters long, include at least one special character, and contain at least one number.',
-      });
-    }
-
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      if (!isEmailValid) {
-        return res.status(400).json({ message: 'Enter a valid email format' });
-      }
-
-    const userAlreadyExists = await User.findOne({ username });
-
-    if (userAlreadyExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-     
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({ username, email, password: hashedPassword,role});
-    await newUser.save();
-
-    res.status(201).json({ message: 'User created successfully' });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 const loginUser = async (req, res) => {
   try {
     const { username, password , role } = req.body;
@@ -272,7 +234,6 @@ const changePass = async (req, res) => {
 };
 
 module.exports = {
-  registerUser,
   loginUser,
   emailVerification,
   reSendingOtp,

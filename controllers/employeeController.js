@@ -10,10 +10,10 @@ const { isNull } = require('lodash');
 const createEmployee = async (req,res)=>
 {
     try {
-        const { username, email, password, emailToSendCred } = req.body;
+        const { username, email, password, empRole ,emailToSendCred } = req.body;
         const {id,role} = req.user;
 
-        if (!username || !email || !password) {
+        if (!username || !email || !password || !empRole) {
           return res.status(400).json({ message: 'Fill all fields' });
         }
 
@@ -51,7 +51,7 @@ const createEmployee = async (req,res)=>
          
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ username, email, password: hashedPassword,role: "employee", admin: user.username, isVerified: true, emailToSendCred});
+        const newUser = new User({ username, email, password: hashedPassword,role: "employee", role: empRole ,admin: user.username, isVerified: true, emailToSendCred});
         await newUser.save();
         await sendCredentials({username,email,password,emailToSendCred});
     

@@ -33,7 +33,6 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 router.post('/user/verification/sendOtp', userController.emailVerification);
 router.post('/user/verification/reSendOtp' , userController.reSendingOtp);

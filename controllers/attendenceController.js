@@ -181,61 +181,50 @@ const getAllAttendence = async (req, res) => {
   }
 };
 
-const getAttendenceByDate = async (req, res) => {
+const getAttendenceByDateOrName = async (req, res) => {
   try {
     const { role } = req.user;
-    const { date } = req.body;
+    const { date, name } = req.body;
 
     if (role !== "admin") {
       return res.status(400).json({ message: 'Unauthorized' });
     }
 
-    const startDate = new Date(date);
-    const endDate = new Date(date);
-    endDate.setDate(startDate.getDate() + 1);
+    let query = {};
 
-    const employeeAtt = await Attendence.find({
-      date: { 
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setDate(startDate.getDate() + 1);
+
+      query.date = { 
         $gte: startDate, 
         $lt: endDate 
+      };
+    }
+
+    if (name) {
+      const user = await User.findOne({ username: name });
+      if (!user) {
+        return res.status(200).json({ message: 'No user record found' });
       }
-    });
+      query.user = user._id;
+    }
 
-    res.status(200).json({ message: 'Attendance By Day:', employeeAtt });
+    const attendance = await Attendence.find(query);
+
+    res.status(200).json({ message: 'Attendance Records:', attendance });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-const getAttendenceByName = async (req, res) => {
-  try {
-    const { role } = req.user;
-    const { username } = req.body;
-
-    if (role !== "admin") {
-      return res.status(400).json({ message: 'Unauthorized' });
-    }
-
-    const user = await User.findOne({username});
-    if(!user)
-    {
-      return res.status(200).json({ message: 'No user record found' });
-    }
-    const attendance = await Attendence.find({user: user._id});
-
-    res.status(200).json({ message: 'Attendance By Name:',username , attendance });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Server error' });
-  }
-};
 
 
   module.exports = {setCheckInTime,
                    setCheckOutTime,
                    getAttendence,
                    getAllAttendence,
-                   getAttendenceByDate,
-                   getAttendenceByName,
+                   getAttendenceByDateOrName,
                    getAttendenceByDateForEmp};
