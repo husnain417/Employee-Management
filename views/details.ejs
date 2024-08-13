@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
+    <title>EJS <%= title %></title>
+</head>
+<body>
+    <nav>
+        <div class="site-title">
+            <a href="/"><h1><Blog Ninja></h1></Blog></a>
+            <p>NINJA SITE</p>
+        </div>
+        <uL class="ul-com">
+            <li><a href="/blogs">Blogs</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/create">New Blog</a></li>
+        </uL>
+    </nav>
+
+    <div class="blog-detail">
+        <h2><%= blog.title %></h2>
+        <p><%= blog.snippet %></p>
+        <div><%= blog.body %></div>
+        <a class="delete" data-doc="<%= blog._id %>">Delete</a>
+    </div>
+
+    <script>
+        const trashcan = document.querySelector('a.delete')
+
+        trashcan.addEventListener('click',(e)=>
+        {
+            const endpoint = `/blogs/${trashcan.dataset.doc}`;
+
+            fetch(endpoint, {
+                method: 'DELETE'
+            })
+            .then((response)=> response.json())
+            .then((data) => console.log(data))
+            .catch(err => console.log(err))
+        })
+    </script>
+</body>
+</html>

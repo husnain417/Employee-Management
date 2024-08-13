@@ -1,0 +1,269 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    padding-top: 30px;
+    background-color: rgb(73, 71, 71);
+}
+
+.site-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.ul-com {
+    display: flex;
+    list-style: none;
+    justify-content: space-between;
+}
+
+.ul-com li {
+    display: flex;
+    margin-right: 30px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.ul-com a {
+    text-decoration: none; 
+    color: rgb(255, 255, 255); 
+}
+
+.ul-com a:hover {
+    color: red;
+}
+
+
+.blogscontent
+{
+    padding: 40px;
+    margin-left: 100px;
+    margin-top: 30px;
+}
+
+.blogscontent > h2
+{
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 30px;
+}
+
+.blogscontent404
+{
+    font-size: 2rem;
+    font-weight: bolder;
+    margin-left: 500px;
+    margin-top: 150px;
+}
+
+.title-in
+{
+    padding: 10px;
+    margin-left: 100px;
+    margin-bottom: 15px;
+    width: 100vh;
+}
+
+.body-in {
+    padding: 10px;
+    margin-left: 100px;
+    margin-bottom: 15px;
+    width: 665px; /* Desired width */
+    height: 150px;
+    resize: vertical; 
+    box-sizing: border-box; /* Ensures padding and border are included in the element's width and height */
+}
+
+
+.snippet-in
+{
+    padding: 10px;
+    margin-left: 100px;
+    margin-bottom: 15px;
+    width: 100vh;
+}
+
+.blogscontent-create
+{
+    padding: 40px;
+    margin-left: 100px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.blogscontent-create > form > h2{
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: gray;
+    margin-bottom: 30px;
+}
+
+
+.blogscontent-home > h2{
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(84, 83, 83);
+    margin-bottom: 30px;
+    margin-left: 50px;
+}
+
+.blogscontent-create > form > h3
+{
+    font-size: 1.2rem;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+.blogscontent-home > h3
+{
+    font-size: 1.2rem;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+.submit
+{
+    height: 40px;
+    width: 70px;
+    padding: 10px;
+    margin-left: 100px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+.submit:hover{
+    cursor: pointer;
+}
+
+.blogscontent-create > form{
+    display: flex;
+    flex-direction: column;
+}
+
+.blogscontent-home
+{
+    padding: 40px;
+    margin-left: 100px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.Blog-div {
+    position: relative; /* Make the div a positioned container */
+    border: none;
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: rgb(231, 221, 221);
+    width: 70vh;
+    height: 70px; 
+    margin-left: 100px;
+    border-left: 6px solid rgb(61, 61, 61);
+    transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+}
+
+.Blog-div:hover {
+    background-color: rgb(114, 114, 114);
+    cursor: pointer;
+    color: white;
+    width: 75vh; 
+    height: 90px; 
+}
+
+.Blog-div .title{
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+}
+
+.Blog-div .snippet{
+    font-weight:100;
+}
+
+.Blog-div .more-info {
+    position: absolute;
+    bottom: 10px; /* Position it 10px from the bottom */
+    left: 10px; /* Position it 10px from the left */
+    color: white;
+    font-size: 1rem;
+    opacity: 0; /* Hide the text by default */
+    transition: opacity 0.3s ease;
+    margin-left: 10px;
+}
+
+.Blog-div:hover .more-info {
+    opacity: 1; 
+}
+
+.single{
+    text-decoration: none;
+    color: black;
+}
+
+.blog-detail
+{
+    padding: 40px;
+    margin-left: 100px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.blog-detail > h2{
+    font-size: 1.9rem;
+    font-weight: bold;
+    color: rgb(84, 83, 83);
+    margin-bottom: 30px;
+    margin-left: 50px;
+}
+
+.blog-detail > p
+{
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: rgb(141, 133, 133);
+    margin-bottom: 30px;
+    margin-left: 50px;
+}
+
+.blog-detail > div{
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: black;
+    margin-bottom: 30px;
+    margin-left: 50px;
+}
+
+.delete
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 20%;
+    padding: 8px;
+    margin-top: 35px;
+    margin-right: 200px;
+    border: none;
+    background-color: black;
+    color: white;
+}
+
+.delete:hover{
+    cursor: pointer;
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2);
+}

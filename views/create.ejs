@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/style.css" rel="stylesheet">
+    <title>Blog Ninja | <%= title %></title>
+</head>
+<body>
+    <nav>
+        <div class="site-title">
+            <a href="/"><h1><Blog Ninja></h1></Blog></a>
+            <p>NINJA SITE</p>
+        </div>
+        <ul class="ul-com">
+            <li><a href="/blogs">Blogs</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/create">New Blog</a></li>
+        </ul>
+    </nav>
+
+    <div class="blogscontent-create" action>
+        <form action="/blogs" method="POST"> 
+        <h2>CREATE A NEW BLOG</h2>
+        <h3 >Blog Title:</h3>
+        <input class="title-in" type="text" placeholder="Enter Title" name="title">
+        <h3 >Blog Snippet:</h3>
+        <input class="snippet-in" type="text" placeholder="Enter Snippet" name="snippet">
+        <h3  >Blog Body:</h3>
+        <textarea class="body-in" placeholder="Enter Body Of Blog" name="body"></textarea>
+        <button class="submit">SUBMIT</button>
+        </form>
+    </div>
+</body>
+</html>

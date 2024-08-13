@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/style.css" rel="stylesheet">
+    <title>Blog Ninja | <%= title %></title>
+</head>
+<body>
+    <nav>
+        <div class="site-title">
+            <a href="/"><h1><Blog Ninja></h1></Blog></a>
+            <p>NINJA SITE</p>
+        </div>
+        <ul class="ul-com">
+            <li class="li1"><a href="/blogs">Blogs</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/create">New Blog</a></li>
+        </ul>
+    </nav>
+
+    <div class="blogscontent-home">
+        <h2>All blogs</h2>
+
+        <% if(blogs.length > 0) { %>
+        <% blogs.forEach(blog => { %>
+                <a class="single" href="/blogs/<%= blog._id %>">
+                    <div class="Blog-div">
+                <h3 class="title"><%= blog.title %></h3>
+                <p class="snippet"><%= blog.snippet %></p>
+            <div class="more-info">Click to see more</div>
+            </div>
+        </a>
+
+        <% }) %>
+        <% } else { %>
+            <p>There are no blogs to display.......</p>
+            <% } %>
+    </div>
+</body>
+</html>
