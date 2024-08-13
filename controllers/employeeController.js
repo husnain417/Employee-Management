@@ -4,7 +4,7 @@ const OfficeTimings = require('../models/officeTimings')
 const Attendence = require('../models/attendence')
 const bcrypt = require('bcrypt');
 const {sendCredentials} = require('../services/sendCredentials');
-const { isNull } = require('lodash');
+const { isNull, identity } = require('lodash');
 
 
 const createEmployee = async (req,res)=>
@@ -64,7 +64,7 @@ const createEmployee = async (req,res)=>
 
 const deleteEmployee = async (req, res) => {
   try {
-    const { username } = req.body;
+    const { username, id} = req.body;
     const {role} = req.user;
 
     if(role !== "admin")
@@ -72,13 +72,28 @@ const deleteEmployee = async (req, res) => {
       return res.status(400).json({ message: 'Unauthorized' });
     }
 
-    const employee = await User.findOne({ username , isDeleted: false});
-    if (!employee) {
-      return res.status(400).json({ message: 'Employee not found' });
+    if(id)
+    {
+      const employee = await User.findOne({ _id: id , isDeleted: false});
+      if (!employee) {
+        return res.status(400).json({ message: 'Employee not found' });
+      }
+      employee.isDeleted = true;
+  
+      employee.save();
     }
-    employee.isDeleted = true;
 
-    employee.save();
+
+    if(username)
+    {
+      const employee = await User.findOne({ username , isDeleted: false});
+      if (!employee) {
+        return res.status(400).json({ message: 'Employee not found' });
+      }
+      employee.isDeleted = true;
+  
+      employee.save();
+    }
 
     res.status(200).json({ message: 'Employee deleted successfully' });
   } catch (err) {
