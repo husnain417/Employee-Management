@@ -1,35 +1,144 @@
 require('dotenv').config();
 const User = require('../models/user');
+const Vendor = require('../models/vendor');
+const Admin = require('../models/admin');
+const Customer = require('../models/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { sendOtp } = require('../services/sendOtp');
 const { reSendOtp } = require('../services/sendOtp');
+const ExcelJS = require('exceljs');
+
+
+const registerUser = async (req, res) => {
+  try { 
+    const { name, username, email, password, role } = req.body;
+
+    if (!username || !email || !password || !role) {
+      return res.status(400).json({ message: 'Fill all fields' });
+    }
+
+    if (!["customer", "vendor", "admin"].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role. Role must be "customer", "vendor", or "admin".' });
+    }
+
+    const userAlreadyExists = await User.findOne({ username });
+
+    if (userAlreadyExists) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
+    const isPasswordValid = /^(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: 'Password must be at least 8 characters long, include at least one special character, and contain at least one number.',
+      });
+    }
+
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!isEmailValid) {
+      return res.status(400).json({ message: 'Enter a valid email format' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const newUser = new User({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      role,
+    });
+
+    await newUser.save();
+
+    if (role === "vendor") {
+      const newVendor = new Vendor({
+        vendorId: newUser._id,
+        products: [],
+        inventory: [],
+        orders: [],
+        salesInsights: [],
+        profile: {
+          contactDetails: { phone: "", email: newUser.email },
+          bankingInformation: { accountNumber: "", bankName: "" },
+          policies: "",
+        },
+      });
+
+      await newVendor.save();
+
+      return res.status(201).json({ message: 'Vendor registration successful. Await admin approval.' });
+    }
+
+    if (role === "admin") {
+      const newAdmin = new Admin({
+        adminId: newUser._id,
+        vendorManagement: {
+          approvedVendors: [],
+          rejectedVendors: [],
+        },
+        productOversight: {
+          approvedProducts: [],
+          rejectedProducts: [],
+        },
+        systemManagement: {
+          websiteContent: "",
+          categories: [],
+          promotionalCampaigns: [],
+        },
+        orderManagement: {
+          escalatedIssues: [],
+        },
+        reportingAndAnalytics: {
+          salesReports: [],
+          vendorPerformance: [],
+          userEngagementMetrics: [],
+        },
+      });
+
+      await newAdmin.save();
+
+      return res.status(201).json({ message: 'Admin registration successful.' });
+    }
+
+    if (role === "customer") {
+      const newCustomer = new Customer({
+        userId: newUser._id,
+        cart: [],
+        wishlist: [],
+        orders: [],
+        browsingHistory: [],
+        recommendations: [],
+        customerSupport: { tickets: [] },
+      });
+
+      await newCustomer.save();
+
+      return res.status(201).json({ message: 'Customer registration successful. You can log in now.' });
+    }
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 const loginUser = async (req, res) => {
   try {
-    const { username, password , role } = req.body;
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Fill all fields' });
     }
 
-    if (role !== "admin" && role !== "employee")
-    {
-      return res.status(400).json({ message: 'Enter correct role' });
-    }
-
-    const user = await User.findOne({ username , isDeleted: false});
+    const user = await User.findOne({ username, isDeleted: false });
     if (!user) {
       return res.status(400).json({ message: 'No user found with this username' });
     }
 
-    if(user.role !== role)
-    {
-      return res.status(400).json({ message: 'No user with this role found' });
-    }
-
-    if(!user.isVerified)
-    {
+    if (!user.isVerified) {
       return res.status(400).json({ message: 'Verify email first' });
     }
 
@@ -42,17 +151,21 @@ const loginUser = async (req, res) => {
       id: user._id,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role, 
     };
 
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '4h' });
 
-    res.status(200).json({ message: 'Login successful', accessToken });
+    res.status(200).json({
+      message: 'Login successful',
+      accessToken,
+    });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 const emailVerification = async (req, res) => {
   try {
@@ -233,7 +346,115 @@ const changePass = async (req, res) => {
   }
 };
 
+const uploadPicture = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    const file = req.file;
+    const newFileName = file.filename;
+    const lastUnderscoreIndex = newFileName.lastIndexOf('_');
+    const newBaseName = newFileName.slice(0, lastUnderscoreIndex);
+    
+    if (user.profilePicUrl) {
+        const oldFileName = path.basename(user.profilePicUrl);
+        const oldLastUnderscoreIndex = oldFileName.lastIndexOf('_');
+        const oldBaseName = oldFileName.slice(0, oldLastUnderscoreIndex);
+        const oldFilePath = path.join(__dirname, '../uploads/', user.username, oldFileName);
+
+      if (fs.existsSync(oldFilePath)) {
+        if (oldBaseName === newBaseName) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+    }
+
+    const url = `${req.protocol}://${req.get('host')}/uploads/${user.username}/${newFileName}`;
+    user.profilePicUrl = url;
+    await user.save();
+
+    res.status(201).json({ message: 'File uploaded successfully', url });
+  } catch (err) {
+    console.error('Error uploading file', err);
+    res.status(500).send('Server error');
+  }
+};
+
+const getPicture = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await User.findById(id);
+
+    if (!user || !user.profilePicUrl) {
+      return res.status(404).json({ message: 'Profile picture not found' });
+    }
+
+    res.status(200).json({ url: user.profilePicUrl });
+  } catch (err) {
+    console.error('Error fetching profile picture', err);
+    res.status(500).send('Server error');
+  }
+}
+
+const updateUserInfo = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          "profile.phone": req.body.phone,  
+          "profile.address": req.body.address, 
+          "profile.bankingInformation": req.body.bankingInformation, 
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User information updated successfully.",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error(err); 
+    res.status(500).json({ message: "Server error" }); 
+  }
+};
+
+const getUserInfo = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+
+    const user = await User.findById(userId).select("-password -__v");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: "User information retrieved successfully.",
+      user,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+
 module.exports = {
+  registerUser,
   loginUser,
   emailVerification,
   reSendingOtp,
@@ -241,4 +462,8 @@ module.exports = {
   forgotPass,
   passwordReset,
   changePass,
+  uploadPicture,
+  getPicture,
+  updateUserInfo,
+  getUserInfo,
 };

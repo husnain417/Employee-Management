@@ -1,59 +1,44 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
 
-const userSchema = new Schema(
-    {
-        username: {
-            type:  String,
-            required: true
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    username: { type: String, required: true }, 
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    role: {
+      type: String,
+      required: true,
+      enum: ["admin", "vendor", "customer"],
+    },
+    profile: {
+      phone: { type: String, required: false },
+      address: [
+        {
+          fullName: String,
+          street: String,
+          city: String,
+          state: String,
+          zipCode: String,
+          country: String,
         },
-        email: {
-            type:  String,
-            required: true
-        },
-        password: {
-            type:  String,
-            required: true
-        },
-        role:{
-            type: String,
-            required: true,
-            enum: ['admin', 'employee'],
-        },
-        admin: {
-            type: String,
-            required: false,
-        },
-        otp: {
-            type: String, 
-          },
-        otpExpires: {
-            type: Date, 
-        },
-        isVerified: {
-            type: Boolean,
-            default: false, 
-        },
-        profilePicUrl: {
-            type: String,
-            required: false
-        },
-        uploadedAt: {
-            type: Date,
-            default: Date.now
-        },
-        isDeleted: {
-            type: Boolean,
-            default: false,
-            required: false
-        },
-        emailToSendCred: {
-            type: String,
-            required: false,
-        }
-    }
-    ,{timestamps: true}
-)
+      ],
+      bankingInformation: {
+        accountNumber: { type: String },
+        bankName: { type: String },
+      },
+    },
+    otp: { type: String, required: false },
+    otpExpires: { type: Date, required: false },
+    isVerified: { type: Boolean, default: false },
+    isDeleted: { type: Boolean, default: false },
+    emailToSendCred: { type: String, required: false },
+    profilePicUrl: {
+      type: String,
+      required: false
+    },
+  },
+  { timestamps: true }
+);
 
-const User = mongoose.model('User', userSchema );
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);

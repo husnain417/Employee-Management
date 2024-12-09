@@ -5,9 +5,9 @@ const { port } = require('./utils/env');
 const express = require('express');
 const { setupMiddleware } = require('./middleware/middleware');
 const userRoutes = require('./routes/userRoutes');
-const empRoutes = require('./routes/employeeRoutes');
-const timingsRoutes = require('./routes/officeTimingsRoutes');
-const attendenceRoutes = require('./routes/attendenceRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const vendorRoutes = require('./routes/vendorRoutes')
+const customerRoutes = require('./routes/customerRoutes')
 const path = require('path');
 
 const app = express();
@@ -16,11 +16,11 @@ setupMiddleware(app);
 
 app.set('view engine', 'ejs');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/productUploads', express.static(path.join(__dirname, 'productUploads')));
 app.use(userRoutes);
-app.use(empRoutes);
-app.use(timingsRoutes);
-app.use(attendenceRoutes);
-
+app.use(adminRoutes);
+app.use(vendorRoutes);
+app.use(customerRoutes);
 
 app.use((req, res) => {
   res.status(404).render('404', { title: 'Error' });
